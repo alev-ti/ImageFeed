@@ -26,6 +26,13 @@ class ImagesListViewController: UIViewController {
         formatter.timeStyle = .none
         return formatter
     }()
+    
+    private func calculateCellHeight(for image: UIImage) -> CGFloat {
+        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
+        let scale = imageViewWidth / image.size.width
+        return image.size.height * scale + imageInsets.top + imageInsets.bottom
+    }
 }
 
 
@@ -36,13 +43,8 @@ extension ImagesListViewController: UITableViewDelegate {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
             return 0
         }
-        
-        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        let imageWidth = image.size.width
-        let scale = imageViewWidth / imageWidth
-        let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
-        return cellHeight
+    
+        return calculateCellHeight(for: image)
     }
 }
 
@@ -76,5 +78,27 @@ extension ImagesListViewController {
         let isLiked = indexPath.row % 2 == 0
         let likeImage = isLiked ? UIImage(named: "like_btn") : UIImage(named: "like_btn_no")
         cell.likeButton.setImage(likeImage, for: .normal)
+        
+        cell.cellImage.layer.sublayers?.removeAll(where: { $0 is CAGradientLayer })
+        
+        let cellHeight = calculateCellHeight(for: image)
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0).cgColor,    // #1A1B2200
+            UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0.2).cgColor   // #1A1B2233
+        ]
+        gradientLayer.locations = [0.0, 0.2]  // 0% to 20%
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        
+        gradientLayer.frame = CGRect(
+            x: 0,
+            y: cellHeight - 38,
+            width: cell.cellImage.bounds.width,
+            height: 30
+        )
+        
+        cell.cellImage.layer.addSublayer(gradientLayer)
     }
 }
