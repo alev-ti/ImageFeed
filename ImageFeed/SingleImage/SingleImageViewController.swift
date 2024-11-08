@@ -8,6 +8,11 @@
 import UIKit
 
 class SingleImageViewController: UIViewController {
+    
+    @IBAction private func didTapBackButton() {
+        dismiss(animated: true, completion: nil)
+    }
+    
     var image: UIImage? {
         didSet {
             guard isViewLoaded else { return }
