@@ -110,12 +110,36 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="14" translatesAutoresizingMaskIntoConstraints="NO" id="2SC-H0-cdj">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="civ-CH-m51">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                                <color key="backgroundColor" name="YP Black"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="9" translatesAutoresizingMaskIntoConstraints="NO" id="2SC-H0-cdj">
+                                        <rect key="frame" x="0.0" y="0.0" width="270" height="350"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="tintColor" name="YP White"/>
+                                    </imageView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="yKg-u0-J0r"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="iqB-q9-axX"/>
+                                <connections>
+                                    <outlet property="delegate" destination="KFj-Fm-k1J" id="jcO-ga-ecv"/>
+                                </connections>
+                            </scrollView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SFn-EF-Mkn" userLabel="Share Button">
+                                <rect key="frame" x="171.66666666666666" y="772" width="50" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="iJU-u2-Hyg"/>
+                                    <constraint firstAttribute="width" constant="50" id="oMq-6f-B7P"/>
+                                </constraints>
                                 <color key="tintColor" name="YP White"/>
-                            </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hf3-K9-DB5">
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="share_btn"/>
+                                <connections>
+                                    <action selector="didTapShareButton:" destination="KFj-Fm-k1J" eventType="touchUpInside" id="u41-yf-K8Q"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hf3-K9-DB5" userLabel="Back Button">
                                 <rect key="frame" x="8" y="8" width="48" height="48"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="1UQ-hu-anS"/>
@@ -132,17 +156,20 @@
                         <color key="backgroundColor" name="YP Black"/>
                         <color key="tintColor" name="YP White"/>
                         <constraints>
+                            <constraint firstItem="civ-CH-m51" firstAttribute="trailing" secondItem="BWQ-gz-zFd" secondAttribute="trailing" id="2Ra-d3-Fio"/>
+                            <constraint firstItem="civ-CH-m51" firstAttribute="top" secondItem="Kn0-PQ-lCT" secondAttribute="top" id="372-wb-vEA"/>
                             <constraint firstItem="Hf3-K9-DB5" firstAttribute="top" secondItem="BWQ-gz-zFd" secondAttribute="top" constant="8" id="8Lj-ga-0gv"/>
-                            <constraint firstItem="2SC-H0-cdj" firstAttribute="bottom" secondItem="Kn0-PQ-lCT" secondAttribute="bottom" id="Fdc-a5-HAg"/>
-                            <constraint firstItem="2SC-H0-cdj" firstAttribute="trailing" secondItem="Kn0-PQ-lCT" secondAttribute="trailing" id="Pzv-yE-lxR"/>
-                            <constraint firstItem="2SC-H0-cdj" firstAttribute="top" secondItem="Kn0-PQ-lCT" secondAttribute="top" id="Vtz-WW-phW"/>
-                            <constraint firstItem="2SC-H0-cdj" firstAttribute="leading" secondItem="Kn0-PQ-lCT" secondAttribute="leading" id="gPg-QF-ozm"/>
+                            <constraint firstItem="civ-CH-m51" firstAttribute="leading" secondItem="BWQ-gz-zFd" secondAttribute="leading" id="Dly-A2-gxK"/>
+                            <constraint firstItem="BWQ-gz-zFd" firstAttribute="bottom" secondItem="SFn-EF-Mkn" secondAttribute="bottom" constant="30" id="Mzb-bE-xeu"/>
+                            <constraint firstItem="SFn-EF-Mkn" firstAttribute="centerX" secondItem="Kn0-PQ-lCT" secondAttribute="centerX" id="rAM-o5-vUT"/>
                             <constraint firstItem="Hf3-K9-DB5" firstAttribute="leading" secondItem="BWQ-gz-zFd" secondAttribute="leading" constant="8" id="u6N-wA-DJi"/>
+                            <constraint firstAttribute="bottom" secondItem="civ-CH-m51" secondAttribute="bottom" id="yz0-zM-q5m"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="mEs-bo-qaf"/>
                     <connections>
                         <outlet property="imageView" destination="2SC-H0-cdj" id="4ei-Xb-ZId"/>
+                        <outlet property="scrollView" destination="civ-CH-m51" id="No6-cu-sYh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UsK-5W-fm8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -252,6 +279,7 @@
         <!--Navigation Controller-->
         <scene sceneID="40F-aN-pAv">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DGR-VK-1St" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="oZG-hs-bZE" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="C3k-5J-c1V"/>
                     <toolbarItems/>
@@ -269,7 +297,6 @@
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="lJG-nU-xAQ"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="DGR-VK-1St" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="109.16030534351144" y="-35.211267605633807"/>
         </scene>
@@ -277,11 +304,12 @@
     <color key="tintColor" name="YP Red"/>
     <resources>
         <image name="0" width="1600" height="1059"/>
-        <image name="14" width="1280" height="853"/>
+        <image name="9" width="1280" height="853"/>
         <image name="avatar" width="70" height="70"/>
         <image name="like_btn" width="42" height="42"/>
         <image name="logout_btn" width="44" height="44"/>
         <image name="nav_back_btn" width="24" height="24"/>
+        <image name="share_btn" width="50" height="50"/>
         <image name="tab_editorial_active" width="30" height="30"/>
         <image name="tab_profile_active" width="30" height="30"/>
         <namedColor name="YP Black">
