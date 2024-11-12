@@ -110,15 +110,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="civ-CH-m51">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="civ-CH-m51">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="9" translatesAutoresizingMaskIntoConstraints="NO" id="2SC-H0-cdj">
-                                        <rect key="frame" x="0.0" y="0.0" width="270" height="350"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="2SC-H0-cdj">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                         <color key="tintColor" name="YP White"/>
                                     </imageView>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="2SC-H0-cdj" firstAttribute="leading" secondItem="yKg-u0-J0r" secondAttribute="leading" id="10S-5l-YIS"/>
+                                    <constraint firstItem="2SC-H0-cdj" firstAttribute="top" secondItem="yKg-u0-J0r" secondAttribute="top" id="AmR-d7-cfZ"/>
+                                    <constraint firstItem="2SC-H0-cdj" firstAttribute="trailing" secondItem="yKg-u0-J0r" secondAttribute="trailing" id="BoV-74-MAp"/>
+                                    <constraint firstItem="2SC-H0-cdj" firstAttribute="bottom" secondItem="yKg-u0-J0r" secondAttribute="bottom" id="yCr-Kh-BV8"/>
+                                </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="yKg-u0-J0r"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="iqB-q9-axX"/>
                                 <connections>
@@ -156,14 +161,14 @@
                         <color key="backgroundColor" name="YP Black"/>
                         <color key="tintColor" name="YP White"/>
                         <constraints>
-                            <constraint firstItem="civ-CH-m51" firstAttribute="trailing" secondItem="BWQ-gz-zFd" secondAttribute="trailing" id="2Ra-d3-Fio"/>
+                            <constraint firstItem="civ-CH-m51" firstAttribute="trailing" secondItem="Kn0-PQ-lCT" secondAttribute="trailing" id="2Ra-d3-Fio"/>
                             <constraint firstItem="civ-CH-m51" firstAttribute="top" secondItem="Kn0-PQ-lCT" secondAttribute="top" id="372-wb-vEA"/>
                             <constraint firstItem="Hf3-K9-DB5" firstAttribute="top" secondItem="BWQ-gz-zFd" secondAttribute="top" constant="8" id="8Lj-ga-0gv"/>
-                            <constraint firstItem="civ-CH-m51" firstAttribute="leading" secondItem="BWQ-gz-zFd" secondAttribute="leading" id="Dly-A2-gxK"/>
+                            <constraint firstItem="civ-CH-m51" firstAttribute="leading" secondItem="Kn0-PQ-lCT" secondAttribute="leading" id="Dly-A2-gxK"/>
                             <constraint firstItem="BWQ-gz-zFd" firstAttribute="bottom" secondItem="SFn-EF-Mkn" secondAttribute="bottom" constant="30" id="Mzb-bE-xeu"/>
                             <constraint firstItem="SFn-EF-Mkn" firstAttribute="centerX" secondItem="Kn0-PQ-lCT" secondAttribute="centerX" id="rAM-o5-vUT"/>
                             <constraint firstItem="Hf3-K9-DB5" firstAttribute="leading" secondItem="BWQ-gz-zFd" secondAttribute="leading" constant="8" id="u6N-wA-DJi"/>
-                            <constraint firstAttribute="bottom" secondItem="civ-CH-m51" secondAttribute="bottom" id="yz0-zM-q5m"/>
+                            <constraint firstItem="civ-CH-m51" firstAttribute="bottom" secondItem="Kn0-PQ-lCT" secondAttribute="bottom" id="yz0-zM-q5m"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="mEs-bo-qaf"/>
@@ -279,7 +284,6 @@
         <!--Navigation Controller-->
         <scene sceneID="40F-aN-pAv">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="DGR-VK-1St" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="oZG-hs-bZE" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="C3k-5J-c1V"/>
                     <toolbarItems/>
@@ -297,6 +301,7 @@
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="lJG-nU-xAQ"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DGR-VK-1St" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="109.16030534351144" y="-35.211267605633807"/>
         </scene>
@@ -304,7 +309,6 @@
     <color key="tintColor" name="YP Red"/>
     <resources>
         <image name="0" width="1600" height="1059"/>
-        <image name="9" width="1280" height="853"/>
         <image name="avatar" width="70" height="70"/>
         <image name="like_btn" width="42" height="42"/>
         <image name="logout_btn" width="44" height="44"/>
