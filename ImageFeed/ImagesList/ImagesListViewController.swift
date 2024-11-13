@@ -1,13 +1,6 @@
-//
-//  ViewController.swift
-//  ImageFeed
-//
-//  Created by alevtine on 30.10.24..
-//
-
 import UIKit
 
-class ImagesListViewController: UIViewController {
+final class ImagesListViewController: UIViewController {
     
     @IBOutlet private var tableView: UITableView!
     

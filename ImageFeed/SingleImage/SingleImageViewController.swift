@@ -1,13 +1,6 @@
-//
-//  SingleImageViewController.swift
-//  ImageFeed
-//
-//  Created by alevtine on 8.11.24..
-//
-
 import UIKit
 
-class SingleImageViewController: UIViewController, UIScrollViewDelegate {
+final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet private var imageView: UIImageView!
@@ -16,7 +9,6 @@ class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         didSet {
             guard isViewLoaded, let image else { return }
             imageView.image = image
-//            imageView.frame.size = image.size
             rescaleAndCenterImageInScrollView(image: image)
         }
     }
@@ -28,7 +20,6 @@ class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         scrollView.delegate = self
         guard let image else { return }
         imageView.image = image
-//        imageView.frame.size = image.size
         rescaleAndCenterImageInScrollView(image: image)
     }
     
@@ -52,8 +43,6 @@ class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         scrollView.contentSize = imageView.frame.size
         centerImageInScrollView()
     }
-
-
     
     private func centerImageInScrollView() {
         let visibleRectSize = scrollView.bounds.size
@@ -62,7 +51,6 @@ class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         let yOffset = max(0, (visibleRectSize.height - contentSize.height) / 2)
         scrollView.contentInset = UIEdgeInsets(top: yOffset, left: xOffset, bottom: yOffset, right: xOffset)
     }
-
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         centerImageInScrollView()
