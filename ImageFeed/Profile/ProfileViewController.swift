@@ -1,6 +1,6 @@
 import UIKit
 
-class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController {
     
     private let profileImageView = UIImageView()
     private let nameLabel = UILabel()
@@ -36,7 +36,7 @@ class ProfileViewController: UIViewController {
     private func renderProfileDetails() {
         // Имя пользователя
         nameLabel.text = "Екатерина Новикова"
-        nameLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        nameLabel.font = UIFont.boldSystemFont(ofSize: 23)
         nameLabel.textColor = UIColor(named: "YP White")
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(nameLabel)
