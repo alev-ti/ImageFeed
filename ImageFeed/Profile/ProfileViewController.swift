@@ -34,7 +34,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var logoutButton: UIButton = {
         let button = UIButton.systemButton(
-            with: UIImage(named: "logout_btn")!,
+            with: UIImage(named: "logout_btn") ?? UIImage(),
             target: self,
             action: #selector(didTapButton)
         )

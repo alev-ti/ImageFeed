@@ -23,10 +23,6 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         rescaleAndCenterImageInScrollView(image: image)
     }
     
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView
-    }
-    
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
         view.layoutIfNeeded()
         
@@ -52,15 +48,11 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         scrollView.contentInset = UIEdgeInsets(top: yOffset, left: xOffset, bottom: yOffset, right: xOffset)
     }
     
-    func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        centerImageInScrollView()
-    }
-    
-    @IBAction func didTapBackButton() {
+    @IBAction private func didTapBackButton() {
         dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func didTapShareButton(_ sender: Any) {
+    @IBAction private func didTapShareButton(_ sender: Any) {
         guard let image else {
             print("No image found")
             return
@@ -71,5 +63,13 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
             applicationActivities: []
         )
         present(vc, animated: true, completion: nil)
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        centerImageInScrollView()
+    }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return imageView
     }
 }
