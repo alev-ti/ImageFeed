@@ -16,15 +16,10 @@ final class SplashViewController: UIViewController {
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     private func showTabBarController() {
         guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController") as! UITabBarController
-        tabBarController.selectedIndex = 1
         window.rootViewController = tabBarController
     }
 }
@@ -35,7 +30,9 @@ extension SplashViewController {
             guard
                 let navigationController = segue.destination as? UINavigationController,
                 let viewController = navigationController.viewControllers[0] as? AuthViewController
-            else { fatalError("Failed to prepare for \(showAuthScreenSegueIdentifier)") }
+            else {
+                fatalError("Failed to prepare for \(showAuthScreenSegueIdentifier)")
+            }
             viewController.delegate = self
         } else {
             super.prepare(for: segue, sender: sender)
@@ -47,7 +44,7 @@ extension SplashViewController: AuthViewControllerDelegate {
     func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
         DispatchQueue.main.async {
             self.dismiss(animated: false) { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.fetchOAuthToken(code)
             }
         }
@@ -56,7 +53,7 @@ extension SplashViewController: AuthViewControllerDelegate {
     private func fetchOAuthToken(_ code: String) {
         oauth2Service.fetchOAuthToken(code) { [weak self] result in
             DispatchQueue.main.async {
-                guard let self = self else { return }
+                guard let self else { return }
                 switch result {
                 case .success:
                     self.showTabBarController()
