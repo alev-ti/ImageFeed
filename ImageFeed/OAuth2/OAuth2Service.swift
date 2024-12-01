@@ -1,5 +1,7 @@
 import Foundation
 
+typealias OAuthTokenResult = (Result<String, Error>) -> Void
+
 final class OAuth2Service {
     static let shared = OAuth2Service()
     private init() {}
@@ -7,8 +9,14 @@ final class OAuth2Service {
     private let tokenStorage = OAuth2TokenStorage()
 
     func fetchOAuthToken(
-        _ code: String, completion: @escaping (Result<String, Error>) -> Void
+        _ code: String, completion: @escaping OAuthTokenResult
     ) {
+        let completionOnTheMainThread: OAuthTokenResult = { result in
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+
         var components = URLComponents(string: Constants.unsplashTokenURLString)
         components?.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
@@ -21,49 +29,31 @@ final class OAuth2Service {
         guard let url = components?.url else {
             let error = URLError(.badURL)
             print("Failed to create URL: \(error)")
-            DispatchQueue.main.async {
-                completion(.failure(error))
-            }
+            completionOnTheMainThread(.failure(error))
             return
         }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
 
-        let task = URLSession.shared.dataTask(with: request) {
-            [weak self] data, response, error in
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             if let error = error {
                 print("Network error: \(error)")
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completionOnTheMainThread(.failure(error))
                 return
             }
 
-            guard let httpResponse = response as? HTTPURLResponse else {
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 let error = URLError(.badServerResponse)
-                print("Invalid server response")
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-                return
-            }
-
-            guard (200...299).contains(httpResponse.statusCode) else {
-                let error = URLError(.badServerResponse)
-                print("Server error: status code \(httpResponse.statusCode)")
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                print("Invalid or failed server response")
+                completionOnTheMainThread(.failure(error))
                 return
             }
 
             guard let data = data else {
                 let error = URLError(.badServerResponse)
                 print("No data received from server")
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completionOnTheMainThread(.failure(error))
                 return
             }
 
@@ -71,19 +61,13 @@ final class OAuth2Service {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-                let responseBody = try decoder.decode(
-                    OAuthTokenResponseBody.self, from: data)
+                let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                 self?.tokenStorage.token = responseBody.accessToken
-                DispatchQueue.main.async {
-                    completion(.success(responseBody.accessToken))
-                }
+                completionOnTheMainThread(.success(responseBody.accessToken))
             } catch {
                 print("Decoding error: \(error)")
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completionOnTheMainThread(.failure(error))
             }
-        }
-        task.resume()
+        }.resume()
     }
 }
