@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B959A9C22CD267DD00E5D611 /* Exceptions for "ImageFeed" folder in "ImageFeed" target */ = {
+		B908D3962CF9F7B90055B82D /* Exceptions for "ImageFeed" folder in "ImageFeed" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -24,7 +24,7 @@
 		B959A9B22CD267DC00E5D611 /* ImageFeed */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B959A9C22CD267DD00E5D611 /* Exceptions for "ImageFeed" folder in "ImageFeed" target */,
+				B908D3962CF9F7B90055B82D /* Exceptions for "ImageFeed" folder in "ImageFeed" target */,
 			);
 			path = ImageFeed;
 			sourceTree = "<group>";
