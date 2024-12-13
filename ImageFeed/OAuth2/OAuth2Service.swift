@@ -7,6 +7,9 @@ final class OAuth2Service {
     private init() {}
 
     private let tokenStorage = OAuth2TokenStorage()
+    
+    private var activeTasks: [String: [OAuthTokenResult]] = [:]
+    private var currentTask: URLSessionDataTask?
 
     func fetchOAuthToken(
         _ code: String, completion: @escaping OAuthTokenResult
@@ -15,6 +18,13 @@ final class OAuth2Service {
             DispatchQueue.main.async {
                 completion(result)
             }
+        }
+        
+        if activeTasks[code] != nil {
+            activeTasks[code]?.append(completionOnTheMainThread)
+            return
+        } else {
+            activeTasks[code] = [completionOnTheMainThread]
         }
 
         var components = URLComponents(string: Constants.unsplashTokenURLString)
@@ -29,31 +39,38 @@ final class OAuth2Service {
         guard let url = components?.url else {
             let error = URLError(.badURL)
             print("Failed to create URL: \(error)")
-            completionOnTheMainThread(.failure(error))
+            completeAll(for: code, with: .failure(error))
             return
         }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        currentTask?.cancel()
+
+        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            defer {
+                self?.activeTasks.removeValue(forKey: code)
+                self?.currentTask = nil
+            }
+
             if let error = error {
                 print("Network error: \(error)")
-                completionOnTheMainThread(.failure(error))
+                self?.completeAll(for: code, with: .failure(error))
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 let error = URLError(.badServerResponse)
                 print("Invalid or failed server response")
-                completionOnTheMainThread(.failure(error))
+                self?.completeAll(for: code, with: .failure(error))
                 return
             }
 
             guard let data = data else {
                 let error = URLError(.badServerResponse)
                 print("No data received from server")
-                completionOnTheMainThread(.failure(error))
+                self?.completeAll(for: code, with: .failure(error))
                 return
             }
 
@@ -63,11 +80,23 @@ final class OAuth2Service {
 
                 let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                 self?.tokenStorage.token = responseBody.accessToken
-                completionOnTheMainThread(.success(responseBody.accessToken))
+                self?.completeAll(for: code, with: .success(responseBody.accessToken))
             } catch {
                 print("Decoding error: \(error)")
-                completionOnTheMainThread(.failure(error))
+                self?.completeAll(for: code, with: .failure(error))
             }
-        }.resume()
+        }
+        
+        currentTask = task
+        task.resume()
+    }
+
+    private func completeAll(for code: String, with result: Result<String, Error>) {
+        if let completions = activeTasks[code] {
+            for completion in completions {
+                completion(result)
+            }
+        }
+        activeTasks.removeValue(forKey: code)
     }
 }
