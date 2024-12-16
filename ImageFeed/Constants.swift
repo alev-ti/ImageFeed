@@ -9,5 +9,6 @@ enum Constants {
     static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
     static let unsplashTokenURLString = "https://unsplash.com/oauth/token"
     static let profileMeUrlString = "\(defaultBaseURL)/me"
+    static let profileUsersUrlString = "\(defaultBaseURL)/users/"
 }
 
