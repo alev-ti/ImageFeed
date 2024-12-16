@@ -10,7 +10,7 @@ final class ProfileViewController: UIViewController {
 
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Екатерина Новикова"
+        label.text = ""
         label.font = UIFont.boldSystemFont(ofSize: 23)
         label.textColor = UIColor(named: "YP White")
         return label
@@ -18,7 +18,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var usernameLabel: UILabel = {
         let label = UILabel()
-        label.text = "@ekaterina_nov"
+        label.text = ""
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = UIColor(red: 174/255, green: 175/255, blue: 180/255, alpha: 1.0) // #AEAFB4
         return label
@@ -26,7 +26,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var statusLabel: UILabel = {
         let label = UILabel()
-        label.text = "Hello, world!"
+        label.text = ""
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = UIColor(named: "YP White")
         return label
@@ -42,12 +42,29 @@ final class ProfileViewController: UIViewController {
         return button
     }()
     
+    private let tokenStorage = OAuth2TokenStorage()
+    private let profileService = ProfileService.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         adjustView()
         addSubviews()
         setupConstraints()
+        loadProfile()
+    }
+    
+    private func loadProfile() {
+        if let profile = profileService.profile {
+            updateUI(with: profile)
+        } else {
+            print("Profile not available. Make sure fetchProfile was called in SplashViewController.")
+        }
+    }
+    
+    private func updateUI(with profile: Profile) {
+        nameLabel.text = profile.name()
+        usernameLabel.text = profile.loginName()
+        statusLabel.text = profile.bio ?? "No bio available"
     }
     
     private func adjustView() {
