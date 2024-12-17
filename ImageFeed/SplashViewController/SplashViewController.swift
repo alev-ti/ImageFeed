@@ -80,12 +80,12 @@ extension SplashViewController: AuthViewControllerDelegate {
         profileService.fetchProfile(token) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self else { return }
-                
-                UIBlockingProgressHUD.dismiss()
 
                 switch result {
                 case .success(let profile):
-                    ProfileImageService.shared.fetchProfileImageURL(username: profile.username) { _ in }
+                    ProfileImageService.shared.fetchProfileImageURL(username: profile.username) { _ in
+                        UIBlockingProgressHUD.dismiss()
+                    }
                     self.showTabBarController()
                 case .failure(let error):
                     print("Error fetching profile: \(error)")

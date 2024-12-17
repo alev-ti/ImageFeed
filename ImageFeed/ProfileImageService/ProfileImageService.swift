@@ -5,6 +5,7 @@ final class ProfileImageService {
     private var currentTask: URLSessionDataTask?
     private(set) var avatarURL: String?
     private let oauth2TokenStorage = OAuth2TokenStorage()
+    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         
@@ -67,6 +68,13 @@ final class ProfileImageService {
                 let responseBody = try decoder.decode(UserResult.self, from: data)
                 let avatarURL = responseBody.profileImage.small
                 self?.avatarURL = avatarURL
+                
+                NotificationCenter.default
+                    .post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": avatarURL])
+                
                 completionOnTheMainThread(.success(avatarURL))
             } catch {
                 print("Decoding error: \(error)")
