@@ -9,7 +9,7 @@ final class OAuth2Service {
     private let tokenStorage = OAuth2TokenStorage()
     
     private var activeTasks: [String: [OAuthTokenResult]] = [:]
-    private var currentTask: URLSessionDataTask?
+    private var currentTask: URLSessionTask?
 
     func fetchOAuthToken(
         _ code: String, completion: @escaping OAuthTokenResult
@@ -48,48 +48,26 @@ final class OAuth2Service {
 
         currentTask?.cancel()
 
-        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             defer {
                 self?.activeTasks.removeValue(forKey: code)
                 self?.currentTask = nil
             }
 
-            if let error = error {
-                print("Network error: \(error)")
-                self?.completeAll(for: code, with: .failure(error))
-                return
-            }
-
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                let error = URLError(.badServerResponse)
-                print("Invalid or failed server response")
-                self?.completeAll(for: code, with: .failure(error))
-                return
-            }
-
-            guard let data = data else {
-                let error = URLError(.badServerResponse)
-                print("No data received from server")
-                self?.completeAll(for: code, with: .failure(error))
-                return
-            }
-
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-                let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+            switch result {
+            case .success(let responseBody):
                 self?.tokenStorage.token = responseBody.accessToken
                 self?.completeAll(for: code, with: .success(responseBody.accessToken))
-            } catch {
-                print("Decoding error: \(error)")
+            case .failure(let error):
+                print("Error: \(error)")
                 self?.completeAll(for: code, with: .failure(error))
             }
         }
-        
+
         currentTask = task
         task.resume()
     }
+
 
     private func completeAll(for code: String, with result: Result<String, Error>) {
         if let completions = activeTasks[code] {
