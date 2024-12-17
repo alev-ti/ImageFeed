@@ -19,13 +19,13 @@ final class ProfileImageService {
         
         guard let url = URL(string: "\(Constants.profileUsersUrlString)\(username)") else {
             let error = URLError(.badURL)
-            print("Failed to create URL: \(error)")
+            print("[ProfileImageService/fetchProfileImageURL]: urlRequestError - failed to create URL")
             completionOnTheMainThread(.failure(error))
             return
         }
         
         guard let token = oauth2TokenStorage.token else {
-            print("Failed to get token")
+            print("[ProfileImageService/fetchProfileImageURL]: failed to get token")
             return
         }
         
@@ -50,7 +50,7 @@ final class ProfileImageService {
                 completionOnTheMainThread(.success(avatarURL))
                 
             case .failure(let error):
-                print("Error: \(error)")
+                print("[ProfileImageService/fetchProfileImageURL]: NetworkError - \(error.localizedDescription)")
                 completionOnTheMainThread(.failure(error))
             }
         }

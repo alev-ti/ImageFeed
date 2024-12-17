@@ -16,21 +16,25 @@ extension URLSession {
                 completion(result)
             }
         }
-        
+
         let task = dataTask(with: request, completionHandler: { data, response, error in
             if let data = data, let response = response, let statusCode = (response as? HTTPURLResponse)?.statusCode {
                 if 200 ..< 300 ~= statusCode {
                     fulfillCompletionOnTheMainThread(.success(data))
                 } else {
-                    fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
+                    let error = NetworkError.httpStatusCode(statusCode)
+                    print("[data(for:)]: NetworkError - error code \(statusCode), URL: \(request.url?.absoluteString ?? "unknown URL")")
+                    fulfillCompletionOnTheMainThread(.failure(error))
                 }
             } else if let error = error {
+                print("[data(for:)]: urlRequestError - \(error.localizedDescription), URL: \(request.url?.absoluteString ?? "unknown URL")")
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
             } else {
+                print("[data(for:)]: urlSessionError, URL: \(request.url?.absoluteString ?? "unknown URL")")
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
             }
         })
-        
+
         return task
     }
 }
@@ -51,11 +55,14 @@ extension URLSession {
                         completion(.success(decodedObject))
                     }
                 } catch {
+                    let dataString = String(data: data, encoding: .utf8) ?? ""
+                    print("[objectTask]: Decoding error - \(error.localizedDescription), Data: \(dataString)")
                     DispatchQueue.main.async {
                         completion(.failure(error))
                     }
                 }
             case .failure(let error):
+                print("[objectTask]: NetworkError - \(error.localizedDescription), URL: \(request.url?.absoluteString ?? "unknown URL")")
                 DispatchQueue.main.async {
                     completion(.failure(error))
                 }
@@ -63,5 +70,6 @@ extension URLSession {
         }
         return task
     }
+
 }
 

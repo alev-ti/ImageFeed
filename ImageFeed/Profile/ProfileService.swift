@@ -17,7 +17,7 @@ final class ProfileService {
 
         guard let url = URL(string: Constants.profileMeUrlString) else {
             let error = URLError(.badURL)
-            print("Failed to create URL: \(error)")
+            print("[ProfileService/fetchProfile]: urlRequestError - failed to create URL")
             completionOnTheMainThread(.failure(error))
             return
         }
@@ -35,7 +35,7 @@ final class ProfileService {
                 self?.profile = profile
                 completionOnTheMainThread(.success(profile))
             case .failure(let error):
-                print("Error: \(error)")
+                print("[ProfileService/fetchProfile]: NetworkError - \(error.localizedDescription)")
                 completionOnTheMainThread(.failure(error))
             }
         }

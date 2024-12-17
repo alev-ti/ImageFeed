@@ -38,7 +38,7 @@ final class OAuth2Service {
 
         guard let url = components?.url else {
             let error = URLError(.badURL)
-            print("Failed to create URL: \(error)")
+            print("[OAuth2Service/fetchOAuthToken]: urlRequestError - failed to create URL")
             completeAll(for: code, with: .failure(error))
             return
         }
@@ -59,7 +59,7 @@ final class OAuth2Service {
                 self?.tokenStorage.token = responseBody.accessToken
                 self?.completeAll(for: code, with: .success(responseBody.accessToken))
             case .failure(let error):
-                print("Error: \(error)")
+                print("[OAuth2Service/fetchOAuthToken]: NetworkError - \(error.localizedDescription)")
                 self?.completeAll(for: code, with: .failure(error))
             }
         }
