@@ -68,7 +68,6 @@ final class OAuth2Service {
         task.resume()
     }
 
-
     private func completeAll(for code: String, with result: Result<String, Error>) {
         if let completions = activeTasks[code] {
             for completion in completions {
