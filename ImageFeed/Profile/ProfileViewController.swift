@@ -1,9 +1,10 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
     private lazy var profileImageView: UIImageView = {
-        let image = UIImage(named: "avatar")
+        let image = UIImage(named: "stub_profile_img")
         let view = UIImageView(image: image)
         return view
     }()
@@ -69,14 +70,31 @@ final class ProfileViewController: UIViewController {
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
         else { return }
-        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+
+        let imageURL = URL(string: profileImageURL)!
+        let processor = RoundCornerImageProcessor(cornerRadius: 60)
+        let cache = ImageCache.default
+        profileImageView.kf.indicatorType = .activity
+        profileImageView.kf.setImage(with: imageURL,
+                              placeholder: UIImage(named: "stub_profile_img"),
+                              options: [
+                                .processor(processor)
+                              ]) { result in
+                                  switch result {
+                                  case .success(let value):
+                                          print("[ProfileViewController/updateAvatar]: avatar img loaded from \(value.cacheType)")
+                                  case .failure(let error):
+                                          print("[ProfileViewController/updateAvatar]: error: \(error)")
+                                  }
+                              }
+
     }
     
     private func loadProfile() {
         if let profile = profileService.profile {
             updateUI(with: profile)
         } else {
-            print("Profile not available. Make sure fetchProfile was called in SplashViewController.")
+            print("[ProfileViewController/loadProfile]: profile not available. make sure fetchProfile was called in SplashViewController.")
         }
     }
     
