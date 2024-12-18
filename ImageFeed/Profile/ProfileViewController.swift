@@ -4,7 +4,7 @@ import Kingfisher
 final class ProfileViewController: UIViewController {
     
     private lazy var profileImageView: UIImageView = {
-        let image = UIImage(named: "stub_profile_img")
+        let image = UIImage()
         let view = UIImageView(image: image)
         return view
     }()
@@ -67,18 +67,18 @@ final class ProfileViewController: UIViewController {
     
     private func updateAvatar() {
         guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
+            let profileImageURL = ProfileImageService.shared.avatarURL
         else { return }
 
         let imageURL = URL(string: profileImageURL)!
         let processor = RoundCornerImageProcessor(cornerRadius: 60)
-        let cache = ImageCache.default
+        
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(with: imageURL,
                               placeholder: UIImage(named: "stub_profile_img"),
                               options: [
-                                .processor(processor)
+                                .processor(processor),
+                                .forceRefresh
                               ]) { result in
                                   switch result {
                                   case .success(let value):
