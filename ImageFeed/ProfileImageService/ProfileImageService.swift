@@ -7,6 +7,8 @@ final class ProfileImageService {
     private let oauth2TokenStorage = OAuth2TokenStorage()
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
+    private init() {}
+    
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         
         currentTask?.cancel()

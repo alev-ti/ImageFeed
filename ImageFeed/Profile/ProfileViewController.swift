@@ -45,6 +45,7 @@ final class ProfileViewController: UIViewController {
     
     private let tokenStorage = OAuth2TokenStorage()
     private let profileService = ProfileService.shared
+    private let profileImageService = ProfileImageService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
@@ -67,7 +68,7 @@ final class ProfileViewController: UIViewController {
     
     private func updateAvatar() {
         guard
-            let profileImageURL = ProfileImageService.shared.avatarURL
+            let profileImageURL = profileImageService.avatarURL
         else { return }
 
         let imageURL = URL(string: profileImageURL)!
