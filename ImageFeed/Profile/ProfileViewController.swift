@@ -4,9 +4,10 @@ import Kingfisher
 final class ProfileViewController: UIViewController {
     
     private lazy var profileImageView: UIImageView = {
-        let image = UIImage()
-        let view = UIImageView(image: image)
-        return view
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        return imageView
     }()
 
     private lazy var nameLabel: UILabel = {
@@ -66,29 +67,31 @@ final class ProfileViewController: UIViewController {
         updateAvatar()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        profileImageView.layer.cornerRadius = profileImageView.frame.width / 2
+    }
+    
     private func updateAvatar() {
         guard
             let profileImageURL = profileImageService.avatarURL
         else { return }
 
         let imageURL = URL(string: profileImageURL)!
-        let processor = RoundCornerImageProcessor(cornerRadius: 60)
-        
-        profileImageView.kf.indicatorType = .activity
-        profileImageView.kf.setImage(with: imageURL,
-                              placeholder: UIImage(named: "stub_profile_img"),
-                              options: [
-                                .processor(processor),
-                                .forceRefresh
-                              ]) { result in
-                                  switch result {
-                                  case .success(let value):
-                                          print("[ProfileViewController/updateAvatar]: avatar img loaded from \(value.cacheType)")
-                                  case .failure(let error):
-                                          print("[ProfileViewController/updateAvatar]: error: \(error)")
-                                  }
-                              }
 
+        profileImageView.kf.indicatorType = .activity
+        profileImageView.kf.setImage(
+            with: imageURL,
+            placeholder: UIImage(named: "stub_profile_img"),
+            options: []
+        ) { result in
+            switch result {
+            case .success(let value):
+                print("[ProfileViewController/updateAvatar]: avatar img loaded from \(value.cacheType)")
+            case .failure(let error):
+                print("[ProfileViewController/updateAvatar]: error: \(error)")
+            }
+        }
     }
     
     private func loadProfile() {
