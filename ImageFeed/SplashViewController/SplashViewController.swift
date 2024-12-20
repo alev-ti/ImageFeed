@@ -41,7 +41,8 @@ final class SplashViewController: UIViewController {
     private func showAuthViewController() {
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         guard let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {
-            fatalError("Failed to instantiate AuthViewController")
+            assertionFailure("Failed to instantiate AuthViewController")
+            return
         }
 
         authViewController.delegate = self
@@ -50,7 +51,10 @@ final class SplashViewController: UIViewController {
     }
 
     private func showTabBarController() {
-        guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
+        guard let window = UIApplication.shared.windows.first else {
+            assertionFailure("Invalid Configuration")
+            return
+        }
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController") as! UITabBarController
         window.rootViewController = tabBarController
@@ -81,13 +85,7 @@ extension SplashViewController: AuthViewControllerDelegate {
                     self.oauth2TokenStorage.token = token
                     self.fetchProfile(token)
                 case .failure:
-                    let alert = UIAlertController(
-                        title: "Что-то пошло не так(",
-                        message: "Не удалось войти в систему",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    self.present(alert, animated: true)
+                    self.showAuthErrorAlert()
                 }
             }
         }
@@ -111,5 +109,15 @@ extension SplashViewController: AuthViewControllerDelegate {
                 }
             }
         }
+    }
+    
+    private func showAuthErrorAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
