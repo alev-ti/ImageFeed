@@ -1,16 +1,18 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
     private lazy var profileImageView: UIImageView = {
-        let image = UIImage(named: "avatar")
-        let view = UIImageView(image: image)
-        return view
+        let imageView = UIImageView()
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        return imageView
     }()
 
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Екатерина Новикова"
+        label.text = ""
         label.font = UIFont.boldSystemFont(ofSize: 23)
         label.textColor = UIColor(named: "YP White")
         return label
@@ -18,7 +20,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var usernameLabel: UILabel = {
         let label = UILabel()
-        label.text = "@ekaterina_nov"
+        label.text = ""
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = UIColor(red: 174/255, green: 175/255, blue: 180/255, alpha: 1.0) // #AEAFB4
         return label
@@ -26,7 +28,7 @@ final class ProfileViewController: UIViewController {
     
     private lazy var statusLabel: UILabel = {
         let label = UILabel()
-        label.text = "Hello, world!"
+        label.text = ""
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = UIColor(named: "YP White")
         return label
@@ -42,12 +44,68 @@ final class ProfileViewController: UIViewController {
         return button
     }()
     
+    private let tokenStorage = OAuth2TokenStorage()
+    private let profileService = ProfileService.shared
+    private let profileImageService = ProfileImageService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         adjustView()
         addSubviews()
         setupConstraints()
+        loadProfile()
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        profileImageView.layer.cornerRadius = profileImageView.frame.width / 2
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = profileImageService.avatarURL
+        else { return }
+
+        let imageURL = URL(string: profileImageURL)!
+
+        profileImageView.kf.indicatorType = .activity
+        profileImageView.kf.setImage(
+            with: imageURL,
+            placeholder: UIImage(named: "stub_profile_img"),
+            options: []
+        ) { result in
+            switch result {
+            case .success(let value):
+                print("[ProfileViewController/updateAvatar]: avatar img loaded from \(value.cacheType)")
+            case .failure(let error):
+                print("[ProfileViewController/updateAvatar]: error: \(error)")
+            }
+        }
+    }
+    
+    private func loadProfile() {
+        if let profile = profileService.profile {
+            updateUI(with: profile)
+        } else {
+            print("[ProfileViewController/loadProfile]: profile not available. make sure fetchProfile was called in SplashViewController.")
+        }
+    }
+    
+    private func updateUI(with profile: Profile) {
+        nameLabel.text = profile.name()
+        usernameLabel.text = profile.loginName()
+        statusLabel.text = profile.bio ?? "No bio available"
     }
     
     private func adjustView() {

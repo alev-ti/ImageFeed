@@ -7,15 +7,23 @@ final class OAuth2Service {
     private init() {}
 
     private let tokenStorage = OAuth2TokenStorage()
+    
+    private var currentTask: URLSessionTask?
+    private var currentCode: String?
 
-    func fetchOAuthToken(
-        _ code: String, completion: @escaping OAuthTokenResult
-    ) {
+    func fetchOAuthToken(_ code: String, completion: @escaping OAuthTokenResult) {
         let completionOnTheMainThread: OAuthTokenResult = { result in
             DispatchQueue.main.async {
                 completion(result)
             }
         }
+
+        if code == currentCode {
+            return
+        }
+
+        currentTask?.cancel()
+        currentCode = code
 
         var components = URLComponents(string: Constants.unsplashTokenURLString)
         components?.queryItems = [
@@ -28,46 +36,32 @@ final class OAuth2Service {
 
         guard let url = components?.url else {
             let error = URLError(.badURL)
-            print("Failed to create URL: \(error)")
+            print("[OAuth2Service/fetchOAuthToken]: urlRequestError - failed to create URL")
             completionOnTheMainThread(.failure(error))
+            currentCode = nil
             return
         }
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            if let error = error {
-                print("Network error: \(error)")
-                completionOnTheMainThread(.failure(error))
-                return
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+            defer {
+                self?.currentTask = nil
+                self?.currentCode = nil
             }
 
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                let error = URLError(.badServerResponse)
-                print("Invalid or failed server response")
-                completionOnTheMainThread(.failure(error))
-                return
-            }
-
-            guard let data = data else {
-                let error = URLError(.badServerResponse)
-                print("No data received from server")
-                completionOnTheMainThread(.failure(error))
-                return
-            }
-
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-                let responseBody = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+            switch result {
+            case .success(let responseBody):
                 self?.tokenStorage.token = responseBody.accessToken
                 completionOnTheMainThread(.success(responseBody.accessToken))
-            } catch {
-                print("Decoding error: \(error)")
+            case .failure(let error):
+                print("[OAuth2Service/fetchOAuthToken]: NetworkError - \(error.localizedDescription)")
                 completionOnTheMainThread(.failure(error))
             }
-        }.resume()
+        }
+
+        currentTask = task
+        task.resume()
     }
 }
