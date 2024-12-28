@@ -49,6 +49,9 @@
                                                     <state key="normal" image="like_btn">
                                                         <color key="titleColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     </state>
+                                                    <connections>
+                                                        <action selector="onLikeButtonTap:" destination="D2h-aY-2YY" eventType="touchUpInside" id="78b-nK-5po"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="31 декабря 2022" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4hk-GG-CY6" userLabel="Date Label">
                                                     <rect key="frame" x="24" y="196" width="105" height="16"/>
