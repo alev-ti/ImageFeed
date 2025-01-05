@@ -1,5 +1,4 @@
 import UIKit
-import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
@@ -46,49 +45,20 @@ final class ImagesListViewController: UIViewController {
         }
     }
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == showSingleImageSegueIdentifier {
-//            guard
-//                let viewController = segue.destination as? SingleImageViewController,
-//                let indexPath = sender as? IndexPath
-//            else {
-//                assertionFailure("Invalid segue destination")
-//                return
-//            }
-//
-//            let photo = photos[indexPath.row]
-//            if let image = UIImage(named: photo.largeImageURL) {
-//                viewController.image = image
-//            }
-//        } else {
-//            super.prepare(for: segue, sender: sender)
-//        }
-//    }
-    
-    private func fetchPhotos() {
-        guard let token = oauth2TokenStorage.token else { return }
-        
-        imageService.fetchPhotosNextPage(token) { result in
-            switch result {
-            case .success(let photos):
-                self.photos.append(contentsOf: photos)
-                self.tableView.reloadData()
-            case .failure(let error):
-                print(error)
-            }
-        }
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: ImagesListService.didChangeNotification, object: nil)
     }
     
-    private func fetchPhotosNextPage() {
+    private func fetchPhotos(isNextPage: Bool = false) {
         guard let token = oauth2TokenStorage.token else { return }
         
-        imageService.fetchPhotosNextPage(token) { result in
+        imageService.fetchPhotosNextPage(token, isNextPage: isNextPage) { result in
             switch result {
             case .success(let newPhotos):
                 self.photos.append(contentsOf: newPhotos)
                 self.tableView.reloadData()
             case .failure(let error):
-                print(error)
+                print("Error fetching photos: \(error)")
             }
         }
     }
@@ -122,6 +92,12 @@ final class ImagesListViewController: UIViewController {
             tableView.insertRows(at: indexPaths, with: .automatic)
         }
     }
+    
+    private func configureCell(_ cell: ImagesListCell, for indexPath: IndexPath) {
+        let photo = photos[indexPath.row]
+        cell.delegate = self
+        cell.configure(with: photo, dateFormatter: dateFormatter)
+    }
 }
 
 extension ImagesListViewController: UITableViewDelegate {
@@ -137,7 +113,7 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row == photos.count - 1 {
-            fetchPhotosNextPage()
+            fetchPhotos(isNextPage: true)
         }
     }
 }
@@ -149,12 +125,8 @@ extension ImagesListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
-        
-        guard let imageListCell = cell as? ImagesListCell else {
-            return UITableViewCell()
-        }
-                
-        configCell(for: imageListCell, with: indexPath)
+        guard let imageListCell = cell as? ImagesListCell else { return UITableViewCell() }
+        configureCell(imageListCell, for: indexPath)
         return imageListCell
     }
 }
@@ -162,42 +134,28 @@ extension ImagesListViewController: UITableViewDataSource {
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photo = photos[indexPath.row]
+        cell.configure(with: photo, dateFormatter: dateFormatter)
+    }
+}
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        let isLike = !photo.isLiked
+        print("imageListCellDidTapLike", photo, isLike)
         
-        cell.configure(with: photo)
-        
-        cell.cellImage.kf.indicatorType = .activity
-        cell.cellImage.kf.setImage(
-            with: URL(string: photo.thumbImageURL),
-            placeholder: UIImage(named: "stub"),
-            options: [.transition(.fade(0.2))]
-        )
-        
-        cell.dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) } ?? ""
-        
-        let likeImage = photo.isLiked ? UIImage(named: "like_btn") : UIImage(named: "like_btn_no")
-        cell.likeButton.setImage(likeImage, for: .normal)
-        
-        cell.cellImage.layer.sublayers?.removeAll(where: { $0 is CAGradientLayer })
-        
-        let cellHeight = calculateCellHeight(for: photo.size)
-        
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0).cgColor,    // #1A1B2200
-            UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 0.2).cgColor   // #1A1B2233
-        ]
-        gradientLayer.locations = [0.0, 0.2]  // 0% to 20%
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
-        
-        gradientLayer.frame = CGRect(
-            x: 0,
-            y: cellHeight - 38,
-            width: cell.cellImage.bounds.width,
-            height: 30
-        )
-        
-        cell.cellImage.layer.addSublayer(gradientLayer)
+        UIBlockingProgressHUD.show()
+        imageService.changeLike(photoId: photo.id, isLike: isLike) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            switch result {
+            case .success():
+                self?.photos[indexPath.row].isLiked = isLike
+                self?.tableView.reloadRows(at: [indexPath], with: .none)
+            case .failure(let error):
+                print("Error changing like status: \(error)")
+            }
+        }
     }
 }
 
