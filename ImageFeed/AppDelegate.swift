@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         ProgressHUD.animationType = .activityIndicator
         ProgressHUD.colorHUD = .black
-        ProgressHUD.colorAnimation = .lightGray
+        ProgressHUD.colorAnimation = .white
         return true
     }
 }

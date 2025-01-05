@@ -8,7 +8,7 @@ final class ImagesListViewController: UIViewController {
     
     private var photos: [Photo] = []
     
-    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let oauth2TokenStorage = OAuth2TokenStorage.shared
     private let imageService: ImagesListService = .shared
     
     override func viewDidLoad() {
@@ -143,7 +143,6 @@ extension ImagesListViewController: ImagesListCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
         let isLike = !photo.isLiked
-        print("imageListCellDidTapLike", photo, isLike)
         
         UIBlockingProgressHUD.show()
         imageService.changeLike(photoId: photo.id, isLike: isLike) { [weak self] result in

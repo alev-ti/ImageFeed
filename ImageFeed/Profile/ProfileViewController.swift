@@ -44,9 +44,10 @@ final class ProfileViewController: UIViewController {
         return button
     }()
     
-    private let tokenStorage = OAuth2TokenStorage()
+    private let tokenStorage = OAuth2TokenStorage.shared
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
+    private let profileLogoutService = ProfileLogoutService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
@@ -151,5 +152,7 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc
-    private func didTapButton() {}
+    private func didTapButton() {
+        profileLogoutService.logout()
+    }
 }

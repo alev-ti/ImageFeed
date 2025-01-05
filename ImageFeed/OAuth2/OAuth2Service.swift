@@ -6,7 +6,7 @@ final class OAuth2Service {
     static let shared = OAuth2Service()
     private init() {}
 
-    private let tokenStorage = OAuth2TokenStorage()
+    private let tokenStorage = OAuth2TokenStorage.shared
     
     private var currentTask: URLSessionTask?
     private var currentCode: String?

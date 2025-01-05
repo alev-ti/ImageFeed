@@ -4,7 +4,7 @@ final class ProfileImageService {
     static let shared = ProfileImageService()
     private var currentTask: URLSessionTask?
     private(set) var avatarURL: String?
-    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let oauth2TokenStorage = OAuth2TokenStorage.shared
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
     private init() {}
@@ -61,5 +61,8 @@ final class ProfileImageService {
         task.resume()
     }
 
+    func clearAvatarURL() {
+        avatarURL = nil
+    }
 }
 

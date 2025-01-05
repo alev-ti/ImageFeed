@@ -76,7 +76,7 @@ final class ImagesListService {
         photoId: String, isLike: Bool,
         _ completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        guard let token = OAuth2TokenStorage().token else {
+        guard let token = OAuth2TokenStorage.shared.token else {
             completion(.failure(NetworkError.unAuthorized))
             return
         }
@@ -127,5 +127,9 @@ final class ImagesListService {
             }
         }
         task.resume()
+    }
+    
+    func clearImagesListData() {
+        photos = []
     }
 }
