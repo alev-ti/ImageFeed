@@ -1,5 +1,4 @@
 import UIKit
-import ProgressHUD
 
 final class SplashViewController: UIViewController {
     private let splashScreenLogo: UIImageView = {
