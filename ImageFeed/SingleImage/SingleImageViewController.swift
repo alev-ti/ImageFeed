@@ -25,68 +25,37 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func loadImage(from url: URL) {
-        imageView.kf.indicatorType = .activity
+        UIBlockingProgressHUD.show()
         imageView.kf.setImage(
             with: url,
-//            placeholder: UIImage(named: "stub"),
             options: []
         ) { [weak self] result in
             guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case .success(let value):
                 self.imageView.image = value.image
                 self.rescaleAndCenterImageInScrollView(image: value.image)
-            case .failure(let error):
-                print("Failed to load image: \(error)")
+                case .failure(_):
+                showError()
             }
         }
     }
     
-//    private func loadImage(from url: URL) {
-//        // Создаем кастомный placeholder
-//        let placeholderView = UIView()
-//        placeholderView.backgroundColor = .ypBlack
-//        
-//        let label = UILabel()
-//        label.text = "Загрузка..."
-//        label.textColor = .white
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        placeholderView.addSubview(label)
-//        
-//        NSLayoutConstraint.activate([
-//            label.centerXAnchor.constraint(equalTo: placeholderView.centerXAnchor),
-//            label.centerYAnchor.constraint(equalTo: placeholderView.centerYAnchor)
-//        ])
-//        
-//        // Добавляем placeholderView в imageView
-//        imageView.addSubview(placeholderView)
-//        placeholderView.frame = imageView.bounds
-//        
-//        // Включаем индикатор загрузки
-//        imageView.kf.indicatorType = .activity
-//        
-//        // Загружаем изображение
-//        imageView.kf.setImage(
-//            with: url,
-//            placeholder: nil, // Не используем изображение как placeholder
-//            options: [.transition(.fade(0.2))]
-//        ) { [weak self] result in
-//            guard let self = self else { return }
-//            
-//            // Убираем кастомный placeholder после загрузки
-//            placeholderView.removeFromSuperview()
-//            
-//            switch result {
-//            case .success(let value):
-//                // Устанавливаем загруженное изображение
-//                self.imageView.image = value.image
-//                self.imageView.backgroundColor = .clear // Убираем фон после загрузки
-//                self.rescaleAndCenterImageInScrollView(image: value.image)
-//            case .failure(let error):
-//                print("Failed to load image: \(error)")
-//            }
-//        }
-//    }
+    private func showError() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так. Попробовать ещё раз?",
+            message: "",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Не надо", style: .default))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { _ in
+            if let imageURL = self.imageURL {
+                self.loadImage(from: imageURL)
+            }
+        })
+        present(alert, animated: true)
+    }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
         view.layoutIfNeeded()
