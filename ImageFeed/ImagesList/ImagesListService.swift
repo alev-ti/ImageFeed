@@ -23,6 +23,10 @@ final class ImagesListService {
                 completion(result)
             }
         }
+        
+        if isNextPage {
+            lastLoadedPage += 1
+        }
 
         var components = URLComponents(string: Constants.photosUrlString)
         components?.queryItems = [
@@ -57,13 +61,8 @@ final class ImagesListService {
                 )
 
                 completionOnTheMainThread(.success(newPhotos))
-                if isNextPage {
-                    lastLoadedPage += 1
-                }
             case .failure(let error):
-                print(
-                    "[ImagesListService/fetchPhotos]: NetworkError - \(error.localizedDescription)"
-                )
+                print("[ImagesListService/fetchPhotos]: NetworkError - \(error.localizedDescription)")
                 completionOnTheMainThread(.failure(error))
             }
         }

@@ -14,9 +14,9 @@ final class ImagesListCell: UITableViewCell {
     weak var delegate: ImagesListCellDelegate?
     
     private var photoId: String?
-    private var isLiked: Bool = false {
+    private var setIsLiked: Bool = false {
         didSet {
-            let likeImage = isLiked ? UIImage(named: "like_btn") : UIImage(named: "like_btn_no")
+            let likeImage = setIsLiked ? UIImage(named: "like_btn") : UIImage(named: "like_btn_no")
             likeButton.setImage(likeImage, for: .normal)
         }
     }
@@ -27,7 +27,7 @@ final class ImagesListCell: UITableViewCell {
     
     func configure(with photo: Photo, dateFormatter: DateFormatter) {
         photoId = photo.id
-        isLiked = photo.isLiked
+        setIsLiked = photo.isLiked
         
         cellImage.kf.indicatorType = .activity
         cellImage.kf.setImage(
@@ -37,9 +37,6 @@ final class ImagesListCell: UITableViewCell {
         )
         
         dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) } ?? ""
-        
-        let likeImage = photo.isLiked ? UIImage(named: "like_btn") : UIImage(named: "like_btn_no")
-        likeButton.setImage(likeImage, for: .normal)
         
         cellImage.layer.sublayers?.removeAll(where: { $0 is CAGradientLayer })
         

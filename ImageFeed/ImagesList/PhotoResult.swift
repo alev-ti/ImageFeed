@@ -7,9 +7,9 @@ struct PhotoResult: Decodable {
     let createdAt: Date
     let description: String?
     let likedByUser: Bool
-    let urls: ImageURLs
+    let urls: UrlsResult
     
-    struct ImageURLs: Decodable {
+    struct UrlsResult: Decodable {
         let raw: String
         let full: String
         let regular: String
