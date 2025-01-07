@@ -12,7 +12,7 @@ final class ImagesListService {
     private var lastLoadedPage: Int = 1
 
     func fetchPhotosNextPage(
-        _ token: String, isNextPage: Bool,
+        _ token: String,
         completion: @escaping (Result<[Photo], Error>) -> Void
     ) {
         currentTask?.cancel()
@@ -23,10 +23,6 @@ final class ImagesListService {
                 completion(result)
             }
         }
-        
-        if isNextPage {
-            lastLoadedPage += 1
-        }
 
         var components = URLComponents(string: Constants.photosUrlString)
         components?.queryItems = [
@@ -35,9 +31,7 @@ final class ImagesListService {
 
         guard let url = components?.url else {
             let error = URLError(.badURL)
-            print(
-                "[ImagesListService/fetchPhotos]: urlRequestError - failed to create URL"
-            )
+            print("[ImagesListService/fetchPhotos]: failed to create URL")
             completionOnTheMainThread(.failure(error))
             return
         }
@@ -54,6 +48,7 @@ final class ImagesListService {
             case .success(let responseBody):
                 let newPhotos = responseBody.map { $0.toPhoto() }
                 self.photos.append(contentsOf: newPhotos)
+                lastLoadedPage += 1
 
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,

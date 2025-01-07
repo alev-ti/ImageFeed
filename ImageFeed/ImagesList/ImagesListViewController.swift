@@ -5,26 +5,25 @@ final class ImagesListViewController: UIViewController {
     @IBOutlet private var tableView: UITableView!
     
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
+    private var imagesListServiceObserver: NSObjectProtocol?
     
     private var photos: [Photo] = []
+    private var previousPhotosCount = 0
     
-    private let oauth2TokenStorage = OAuth2TokenStorage.shared
+    private let oauth2TokenStorage: OAuth2TokenStorage = .shared
     private let imageService: ImagesListService = .shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.rowHeight = 200
-        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateTableViewAnimated),
-            name: ImagesListService.didChangeNotification,
-            object: nil
-        )
-        
+        imagesListServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ImagesListService.didChangeNotification,
+                object: nil,
+                queue: .main) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.updateTableViewAnimated()
+                }
+        previousPhotosCount = 0
         fetchPhotos()
     }
     
@@ -34,7 +33,7 @@ final class ImagesListViewController: UIViewController {
                 let viewController = segue.destination as? SingleImageViewController,
                 let indexPath = sender as? IndexPath
             else {
-                assertionFailure("Invalid segue destination")
+                assertionFailure("[ImagesListViewController/prepare]: Invalid segue destination")
                 return
             }
 
@@ -49,16 +48,12 @@ final class ImagesListViewController: UIViewController {
         NotificationCenter.default.removeObserver(self, name: ImagesListService.didChangeNotification, object: nil)
     }
     
-    private func fetchPhotos(isNextPage: Bool = false) {
+    private func fetchPhotos() {
         guard let token = oauth2TokenStorage.token else { return }
         
-        imageService.fetchPhotosNextPage(token, isNextPage: isNextPage) { result in
-            switch result {
-            case .success(let newPhotos):
-                self.photos.append(contentsOf: newPhotos)
-                self.tableView.reloadData()
-            case .failure(let error):
-                print("Error fetching photos: \(error)")
+        imageService.fetchPhotosNextPage(token ) { result in
+            if case .failure(let error) = result {
+                print("[ImagesListViewController/fetchPhotos]: Error fetching photos: \(error)")
             }
         }
     }
@@ -70,6 +65,13 @@ final class ImagesListViewController: UIViewController {
         return formatter
     }()
     
+    private func setupTableView() {
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.rowHeight = 200
+        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
+    
     private func calculateCellHeight(for imageSize: CGSize) -> CGFloat {
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
@@ -78,19 +80,23 @@ final class ImagesListViewController: UIViewController {
     }
     
     @objc private func updateTableViewAnimated() {
-        let oldCount = photos.count
         let newPhotos = imageService.photos
-        
-        guard newPhotos.count > oldCount else {
+
+        guard newPhotos.count > previousPhotosCount else {
             return
+        }
+
+        let indexPaths = (previousPhotosCount..<newPhotos.count).map {
+            IndexPath(row: $0, section: 0)
         }
         
         photos = newPhotos
         
         tableView.performBatchUpdates {
-            let indexPaths = (oldCount..<newPhotos.count).map { IndexPath(row: $0, section: 0) }
             tableView.insertRows(at: indexPaths, with: .automatic)
         }
+        
+        previousPhotosCount = newPhotos.count
     }
     
     private func configureCell(_ cell: ImagesListCell, for indexPath: IndexPath) {
@@ -113,7 +119,7 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row == photos.count - 1 {
-            fetchPhotos(isNextPage: true)
+            fetchPhotos()
         }
     }
 }
@@ -152,7 +158,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 self?.photos[indexPath.row].isLiked = isLike
                 self?.tableView.reloadRows(at: [indexPath], with: .none)
             case .failure(let error):
-                print("Error changing like status: \(error)")
+                print("[ImagesListViewController/imageListCellDidTapLike]: Error changing like status: \(error)")
             }
         }
     }
