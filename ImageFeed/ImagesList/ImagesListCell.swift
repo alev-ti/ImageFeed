@@ -7,21 +7,21 @@ protocol ImagesListCellDelegate: AnyObject {
 
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
-    @IBOutlet weak var cellImage: UIImageView!
-    @IBOutlet weak var likeButton: UIButton!
-    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet private weak var cellImage: UIImageView!
+    @IBOutlet private weak var likeButton: UIButton!
+    @IBOutlet private weak var dateLabel: UILabel!
     
     weak var delegate: ImagesListCellDelegate?
     
     private var photoId: String?
     private var setIsLiked: Bool = false {
         didSet {
-            let likeImage = setIsLiked ? UIImage(named: "like_btn") : UIImage(named: "like_btn_no")
+            let likeImage = setIsLiked ? UIImage(named: "highlightedLikeButton") : UIImage(named: "unhighlightedLikeButton")
             likeButton.setImage(likeImage, for: .normal)
         }
     }
     
-    @IBAction func onLikeButtonTap(_ sender: Any) {
+    @IBAction private func onLikeButtonTap(_ sender: Any) {
         delegate?.imageListCellDidTapLike(self)
     }
     

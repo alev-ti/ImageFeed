@@ -17,8 +17,7 @@ final class ImagesListService {
     ) {
         currentTask?.cancel()
 
-        let completionOnTheMainThread: (Result<[Photo], Error>) -> Void = {
-            result in
+        let completionOnTheMainThread: (Result<[Photo], Error>) -> Void = { result in
             DispatchQueue.main.async {
                 completion(result)
             }
@@ -39,8 +38,7 @@ final class ImagesListService {
         var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
-        let task = URLSession.shared.objectTask(for: request) {
-            [weak self] (result: Result<[PhotoResult], Error>) in
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
             guard let self else { return }
             currentTask = nil
 
@@ -75,7 +73,7 @@ final class ImagesListService {
             return
         }
 
-        let urlString = Constants.photosIdLikeUrlString(photoId: photoId)
+        let urlString = Constants.getLikedPhotosIdUrlString(photoId: photoId)
         guard let url = URL(string: urlString) else {
             completion(.failure(NetworkError.invalidURL))
             return
@@ -85,8 +83,7 @@ final class ImagesListService {
         request.httpMethod = isLike ? "POST" : "DELETE"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
-        let task = URLSession.shared.dataTask(with: request) {
-            [weak self] data, response, error in
+        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             guard let self = self else { return }
 
             if let error = error {

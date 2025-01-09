@@ -15,19 +15,19 @@ final class ProfileLogoutService {
         navigateToAuthScreen()
     }
     
-    func clearProfileData() {
+    private func clearProfileData() {
         ProfileService.shared.clearProfileData()
     }
     
-    func clearImagesListData() {
+    private func clearImagesListData() {
         ImagesListService.shared.clearImagesListData()
     }
     
-    func clearAvatarURL() {
+    private func clearAvatarURL() {
         ProfileImageService.shared.clearAvatarURL()
     }
     
-    func clearToken() {
+    private func clearToken() {
         OAuth2TokenStorage.shared.clearToken()
     }
 

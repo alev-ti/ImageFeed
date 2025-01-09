@@ -13,8 +13,8 @@ enum Constants {
     static let oauthAuthorizeUrl = "/oauth/authorize/native"
     static let photosUrlString = "\(defaultBaseURL)/photos"
     
-    static func photosIdLikeUrlString(photoId: String) -> String {
-        return "\(defaultBaseURL)/photos/\(photoId)/like"
+    static func getLikedPhotosIdUrlString(photoId: String) -> String {
+        "\(defaultBaseURL)/photos/\(photoId)/like"
     }
 }
 
