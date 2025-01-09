@@ -51,11 +51,15 @@ final class SplashViewController: UIViewController {
 
     private func showTabBarController() {
         guard let window = UIApplication.shared.windows.first else {
-            assertionFailure("Invalid Configuration")
+            assertionFailure("Invalid Configuration: No windows available.")
             return
         }
-        let tabBarController = UIStoryboard(name: "Main", bundle: .main)
-            .instantiateViewController(withIdentifier: "TabBarViewController") as! UITabBarController
+
+        guard let tabBarController = UIStoryboard(name: "Main", bundle: .main)
+            .instantiateViewController(withIdentifier: "TabBarViewController") as? UITabBarController else {
+            assertionFailure("Invalid Configuration: TabBarViewController is not a UITabBarController.")
+            return
+        }
         window.rootViewController = tabBarController
     }
 }

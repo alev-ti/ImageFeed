@@ -50,8 +50,11 @@ final class ProfileLogoutService {
                 assertionFailure("[ProfileLogoutService/navigateToRootScreen]: failed to retrieve app window")
                 return
             }
-            let authViewController = UIStoryboard(name: "Main", bundle: .main)
-                .instantiateViewController(withIdentifier: "AuthViewController") as! AuthViewController
+            guard let authViewController = UIStoryboard(name: "Main", bundle: .main)
+                .instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {
+                assertionFailure("Invalid Configuration: failed to cast AuthViewController")
+                return
+            }
             window.rootViewController = authViewController
         }
     }
