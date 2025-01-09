@@ -4,7 +4,7 @@ struct PhotoResult: Decodable {
     let id: String
     let width: Int
     let height: Int
-    let createdAt: Date
+    let createdAt: String
     let description: String?
     let likedByUser: Bool
     let urls: UrlsResult
@@ -21,7 +21,7 @@ struct PhotoResult: Decodable {
         return Photo(
             id: id,
             size: CGSize(width: width, height: height),
-            createdAt: createdAt,
+            createdAt: ISO8601DateFormatter().date(from: createdAt),
             welcomeDescription: description,
             thumbImageURL: urls.thumb,
             largeImageURL: urls.full,
