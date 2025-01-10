@@ -11,5 +11,10 @@ enum Constants {
     static let profileMeUrlString = "\(defaultBaseURL)/me"
     static let profileUsersUrlString = "\(defaultBaseURL)/users/"
     static let oauthAuthorizeUrl = "/oauth/authorize/native"
+    static let photosUrlString = "\(defaultBaseURL)/photos"
+    
+    static func getLikedPhotosIdUrlString(photoId: String) -> String {
+        "\(defaultBaseURL)/photos/\(photoId)/like"
+    }
 }
 

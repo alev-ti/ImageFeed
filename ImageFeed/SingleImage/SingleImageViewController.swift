@@ -1,15 +1,15 @@
 import UIKit
+import Kingfisher
 
 final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     
     @IBOutlet private weak var scrollView: UIScrollView!
     @IBOutlet private weak var imageView: UIImageView!
     
-    var image: UIImage? {
+    var imageURL: URL? {
         didSet {
-            guard isViewLoaded, let image else { return }
-            imageView.image = image
-            rescaleAndCenterImageInScrollView(image: image)
+            guard isViewLoaded, let imageURL else { return }
+            loadImage(from: imageURL)
         }
     }
     
@@ -18,9 +18,43 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         scrollView.delegate = self
-        guard let image else { return }
-        imageView.image = image
-        rescaleAndCenterImageInScrollView(image: image)
+        
+        if let imageURL = imageURL {
+            loadImage(from: imageURL)
+        }
+    }
+    
+    private func loadImage(from url: URL) {
+        UIBlockingProgressHUD.show()
+        imageView.kf.setImage(
+            with: url,
+            options: []
+        ) { [weak self] result in
+            guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
+            switch result {
+            case .success(let value):
+                self.imageView.image = value.image
+                self.rescaleAndCenterImageInScrollView(image: value.image)
+                case .failure(_):
+                showError()
+            }
+        }
+    }
+    
+    private func showError() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так. Попробовать ещё раз?",
+            message: "",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Не надо", style: .default))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { _ in
+            if let imageURL = self.imageURL {
+                self.loadImage(from: imageURL)
+            }
+        })
+        present(alert, animated: true)
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
@@ -53,7 +87,7 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @IBAction private func didTapShareButton(_ sender: Any) {
-        guard let image else {
+        guard let image = imageView.image else {
             print("No image found")
             return
         }

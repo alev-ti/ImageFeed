@@ -4,6 +4,9 @@ enum NetworkError: Error {
     case httpStatusCode(Int)
     case urlRequestError(Error)
     case urlSessionError
+    case invalidResponse
+    case unAuthorized
+    case invalidURL
 }
 
 extension URLSession {
@@ -46,6 +49,7 @@ extension URLSession {
     ) -> URLSessionTask {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .iso8601
         let task = data(for: request) { (result: Result<Data, Error>) in
             switch result {
             case .success(let data):
@@ -70,6 +74,5 @@ extension URLSession {
         }
         return task
     }
-
 }
 

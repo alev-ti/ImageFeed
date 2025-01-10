@@ -6,7 +6,7 @@ final class OAuth2Service {
     static let shared = OAuth2Service()
     private init() {}
 
-    private let tokenStorage = OAuth2TokenStorage()
+    private let tokenStorage = OAuth2TokenStorage.shared
     
     private var currentTask: URLSessionTask?
     private var currentCode: String?
@@ -43,7 +43,7 @@ final class OAuth2Service {
         }
 
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = HTTPMethod.post.rawValue
 
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             defer {

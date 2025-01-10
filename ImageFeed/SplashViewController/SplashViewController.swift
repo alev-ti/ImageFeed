@@ -1,5 +1,4 @@
 import UIKit
-import ProgressHUD
 
 final class SplashViewController: UIViewController {
     private let splashScreenLogo: UIImageView = {
@@ -9,7 +8,7 @@ final class SplashViewController: UIViewController {
     }()
 
     private let oauth2Service = OAuth2Service.shared
-    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let oauth2TokenStorage = OAuth2TokenStorage.shared
     
     private let profileService = ProfileService.shared
 
@@ -52,11 +51,15 @@ final class SplashViewController: UIViewController {
 
     private func showTabBarController() {
         guard let window = UIApplication.shared.windows.first else {
-            assertionFailure("Invalid Configuration")
+            assertionFailure("Invalid Configuration: No windows available.")
             return
         }
-        let tabBarController = UIStoryboard(name: "Main", bundle: .main)
-            .instantiateViewController(withIdentifier: "TabBarViewController") as! UITabBarController
+
+        guard let tabBarController = UIStoryboard(name: "Main", bundle: .main)
+            .instantiateViewController(withIdentifier: "TabBarViewController") as? UITabBarController else {
+            assertionFailure("Invalid Configuration: TabBarViewController is not a UITabBarController.")
+            return
+        }
         window.rootViewController = tabBarController
     }
 }
