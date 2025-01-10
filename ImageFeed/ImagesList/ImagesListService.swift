@@ -80,7 +80,7 @@ final class ImagesListService {
         }
 
         var request = URLRequest(url: url)
-        request.httpMethod = isLike ? HTTPMethod.POST.rawValue : HTTPMethod.DELETE.rawValue
+        request.httpMethod = isLike ? HTTPMethod.post.rawValue : HTTPMethod.delete.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in

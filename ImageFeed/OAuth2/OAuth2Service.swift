@@ -43,7 +43,7 @@ final class OAuth2Service {
         }
 
         var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethod.POST.rawValue
+        request.httpMethod = HTTPMethod.post.rawValue
 
         let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             defer {
