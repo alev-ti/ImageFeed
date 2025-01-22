@@ -1,8 +1,13 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
-    
+protocol ProfileViewControllerProtocol: AnyObject {
+    func updateUI(with profile: Profile)
+    func updateAvatar(imageURL: URL)
+    func showLogoutAlert()
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     private lazy var profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
@@ -43,43 +48,41 @@ final class ProfileViewController: UIViewController {
         button.tintColor = UIColor(named: "YP Red")
         return button
     }()
-    
-    private let tokenStorage = OAuth2TokenStorage.shared
-    private let profileService = ProfileService.shared
-    private let profileImageService = ProfileImageService.shared
-    private let profileLogoutService = ProfileLogoutService.shared
-    private var profileImageServiceObserver: NSObjectProtocol?
+
+    private let presenter: ProfileViewPresenterProtocol
+
+    init(presenter: ProfileViewPresenterProtocol) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+        self.presenter.view = self
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         adjustView()
         addSubviews()
         setupConstraints()
-        loadProfile()
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        updateAvatar()
+        presenter.viewDidLoad()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         profileImageView.layer.cornerRadius = profileImageView.frame.width / 2
     }
-    
-    private func updateAvatar() {
-        guard
-            let profileImageURL = profileImageService.avatarURL
-        else { return }
 
-        let imageURL = URL(string: profileImageURL)!
+    // MARK: - ProfileViewControllerProtocol
 
+    func updateUI(with profile: Profile) {
+        nameLabel.text = profile.name()
+        usernameLabel.text = profile.loginName()
+        statusLabel.text = profile.bio ?? "No bio available"
+    }
+
+    func updateAvatar(imageURL: URL) {
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(
             with: imageURL,
@@ -94,21 +97,22 @@ final class ProfileViewController: UIViewController {
             }
         }
     }
-    
-    private func loadProfile() {
-        if let profile = profileService.profile {
-            updateUI(with: profile)
-        } else {
-            print("[ProfileViewController/loadProfile]: profile not available. make sure fetchProfile was called in SplashViewController.")
-        }
+
+    func showLogoutAlert() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Да", style: .default) { [weak self] _ in
+            self?.presenter.didTapLogoutButton()
+        })
+        alert.addAction(UIAlertAction(title: "Нет", style: .default))
+        present(alert, animated: true)
     }
-    
-    private func updateUI(with profile: Profile) {
-        nameLabel.text = profile.name()
-        usernameLabel.text = profile.loginName()
-        statusLabel.text = profile.bio ?? "No bio available"
-    }
-    
+
+    // MARK: - Private Methods
+
     private func adjustView() {
         view.backgroundColor = UIColor(named: "YP Black")
     }
@@ -151,21 +155,8 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func showLogoutAlert() {
-        let alert = UIAlertController(
-            title: "Пока, пока!",
-            message: "Уверены, что хотите выйти?",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "Да", style: .default) { [weak self] _ in
-            self?.profileLogoutService.logout()
-        })
-        alert.addAction(UIAlertAction(title: "Нет", style: .default))
-        present(alert, animated: true)
-    }
-    
     @objc
     private func didTapButton() {
-        showLogoutAlert()
+        presenter.didTapLogoutButton()
     }
 }
