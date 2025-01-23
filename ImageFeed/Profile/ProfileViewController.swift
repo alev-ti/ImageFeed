@@ -105,7 +105,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "Да", style: .default) { [weak self] _ in
-            self?.presenter.didTapLogoutButton()
+            self?.presenter.logout()
         })
         alert.addAction(UIAlertAction(title: "Нет", style: .default))
         present(alert, animated: true)

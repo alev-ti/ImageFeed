@@ -6,15 +6,16 @@ protocol ProfileViewPresenterProtocol: AnyObject {
     func didTapLogoutButton()
     func updateAvatar()
     func loadProfile()
+    func logout()
 }
 
 final class ProfileViewPresenter: ProfileViewPresenterProtocol {
     weak var view: ProfileViewControllerProtocol?
-
+    
     private let profileService: ProfileServiceProtocol
     private let profileImageService: ProfileImageServiceProtocol
     private let profileLogoutService: ProfileLogoutServiceProtocol
-
+    
     init(
         profileService: ProfileServiceProtocol,
         profileImageService: ProfileImageServiceProtocol,
@@ -24,17 +25,17 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
         self.profileImageService = profileImageService
         self.profileLogoutService = profileLogoutService
     }
-
+    
     func viewDidLoad() {
         loadProfile()
         updateAvatar()
         setupObserver()
     }
-
+    
     func didTapLogoutButton() {
         view?.showLogoutAlert()
     }
-
+    
     func updateAvatar() {
         guard let avatarURLString = profileImageService.avatarURL,
               let avatarURL = URL(string: avatarURLString) else {
@@ -42,13 +43,17 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
         }
         view?.updateAvatar(imageURL: avatarURL)
     }
-
+    
     func loadProfile() {
         if let profile = profileService.profile {
             view?.updateUI(with: profile)
         } else {
             print("[ProfileViewPresenter/loadProfile]: profile not available.")
         }
+    }
+    
+    func logout() {
+        profileLogoutService.logout()
     }
 
     private func setupObserver() {
