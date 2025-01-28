@@ -3,10 +3,10 @@ struct Profile: Decodable {
     let username: String
     let bio: String?
     let firstName: String
-    let lastName: String
+    let lastName: String?
 
     func name() -> String {
-        return "\(firstName) \(lastName)"
+        return "\(firstName) \(lastName ?? "")"
     }
 
     func loginName() -> String {
