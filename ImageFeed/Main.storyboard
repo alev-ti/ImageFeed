@@ -41,6 +41,7 @@
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VM4-5p-YjJ" userLabel="Like Button">
                                                     <rect key="frame" x="333" y="4" width="44" height="44"/>
+                                                    <accessibility key="accessibilityConfiguration" identifier="unhighlightedLikeButton"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="44" id="TMF-Ex-RZ3"/>
                                                         <constraint firstAttribute="width" constant="44" id="wRy-p2-0T3"/>
@@ -89,6 +90,9 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Black"/>
+                        <accessibility key="accessibilityConfiguration" identifier="ImagesList">
+                            <bool key="isElement" value="YES"/>
+                        </accessibility>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="t4w-74-dHj" secondAttribute="bottom" id="P1p-ss-sqd"/>
                             <constraint firstItem="t4w-74-dHj" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="ZPM-bO-jVk"/>
@@ -111,7 +115,7 @@
         <!--Single Image View Controller-->
         <scene sceneID="nnS-0I-oF1">
             <objects>
-                <viewController modalPresentationStyle="fullScreen" id="KFj-Fm-k1J" customClass="SingleImageViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SingleImageViewController" modalPresentationStyle="fullScreen" id="KFj-Fm-k1J" customClass="SingleImageViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Kn0-PQ-lCT">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -152,6 +156,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hf3-K9-DB5" userLabel="Back Button">
                                 <rect key="frame" x="8" y="8" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="nav_back_btn"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="1UQ-hu-anS"/>
                                     <constraint firstAttribute="width" constant="48" id="yeY-Nz-NGS"/>
@@ -200,6 +205,7 @@
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="27h-44-nQo" userLabel="Enter Button">
                                 <rect key="frame" x="16" y="680" width="361" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="Authenticate"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="gS8-aZ-f3b"/>
                                 </constraints>
@@ -248,7 +254,7 @@
         <!--Web View View Controller-->
         <scene sceneID="vTD-BJ-ir2">
             <objects>
-                <viewController id="HYJ-AA-38J" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="HYJ-AA-38J" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ock-wy-jcl">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

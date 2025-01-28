@@ -1,6 +1,13 @@
 import Foundation
 
-final class ImagesListService {
+protocol ImagesListServiceProtocol: AnyObject {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage(_ token: String, completion: @escaping (Result<[Photo], Error>) -> Void)
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void)
+    func clearImagesListData()
+}
+
+final class ImagesListService: ImagesListServiceProtocol {
     private init() {}
     static let shared = ImagesListService()
 
@@ -48,6 +55,7 @@ final class ImagesListService {
                 self.photos.append(contentsOf: newPhotos)
                 lastLoadedPage += 1
 
+                print("[ImagesListService/fetchPhotosNextPage]: Added \(newPhotos.count) new photos. Posting notification...")
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
                     object: self
